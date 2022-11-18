@@ -52,3 +52,4 @@ disabled = true
 [node name="CollisionTween" type="Tween" parent="."]
 
 [connection signal="body_entered" from="." to="." method="_on_Block_body_entered"]
+[connection signal="tween_all_completed" from="SpriteTween" to="." method="_on_SpriteTween_tween_all_completed"]
