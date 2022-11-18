@@ -1,0 +1,96 @@
+[gd_scene load_steps=8 format=2]
+
+[ext_resource path="res://scenes/menu/Font.tres" type="DynamicFont" id=1]
+[ext_resource path="res://assets/fonts/MatchupPro.ttf" type="DynamicFontData" id=2]
+[ext_resource path="res://assets/block7.png" type="Texture" id=3]
+[ext_resource path="res://scenes/servers/Servers.gd" type="Script" id=4]
+
+[sub_resource type="DynamicFont" id=1]
+size = 32
+font_data = ExtResource( 2 )
+
+[sub_resource type="Animation" id=2]
+resource_name = "Loading"
+loop = true
+tracks/0/type = "value"
+tracks/0/path = NodePath("Loading/Sprite:rect_rotation")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.1, 0.2, 0.3, 0.4, 1 ),
+"transitions": PoolRealArray( 1, 1, 1, 1, 1, 1 ),
+"update": 0,
+"values": [ 0.0, -10.0, 45.0, 100.0, 90.0, 90.0 ]
+}
+
+[sub_resource type="Animation" id=3]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/path = NodePath("Loading/Sprite:rect_rotation")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ -10.0 ]
+}
+
+[node name="Servers" type="Control"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+script = ExtResource( 4 )
+
+[node name="Title" type="Label" parent="."]
+margin_left = 20.0
+margin_top = 20.0
+margin_right = 40.0
+margin_bottom = 14.0
+custom_fonts/font = ExtResource( 1 )
+text = "Servidores"
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -20.0
+margin_top = -20.0
+margin_right = 20.0
+margin_bottom = 20.0
+custom_constants/separation = 100
+
+[node name="Loading" type="VBoxContainer" parent="."]
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_top = -105.0
+margin_bottom = -24.0
+custom_constants/separation = 15
+alignment = 1
+
+[node name="Label" type="Label" parent="Loading"]
+margin_right = 1024.0
+margin_bottom = 26.0
+custom_fonts/font = SubResource( 1 )
+text = "Procurando servidores..."
+align = 1
+valign = 1
+
+[node name="Sprite" type="TextureRect" parent="Loading"]
+margin_left = 492.0
+margin_top = 41.0
+margin_right = 532.0
+margin_bottom = 81.0
+rect_rotation = -10.0
+rect_pivot_offset = Vector2( 20, 20 )
+size_flags_horizontal = 4
+texture = ExtResource( 3 )
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+anims/Loading = SubResource( 2 )
+anims/RESET = SubResource( 3 )
