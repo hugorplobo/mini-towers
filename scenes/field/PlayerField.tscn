@@ -28,3 +28,12 @@ texture = ExtResource( 2 )
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Floor"]
 shape = SubResource( 1 )
+
+[node name="NextBlock" type="Sprite" parent="."]
+position = Vector2( 0, -560 )
+
+[node name="Label" type="Label" parent="."]
+margin_top = -590.0
+margin_right = 40.0
+margin_bottom = -576.0
+text = "Próxima peça:"

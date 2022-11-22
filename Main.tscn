@@ -23,4 +23,3 @@ margin_bottom = 70.0
 
 [node name="PlayerField" parent="." instance=ExtResource( 1 )]
 position = Vector2( 511, 569 )
-next_block_path = NodePath("../NextBlock")

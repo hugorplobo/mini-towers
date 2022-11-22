@@ -1,5 +1,6 @@
 extends Control
 
+var lobby = preload("res://scenes/lobby/Lobby.tscn")
 var server_item = preload("res://scenes/servers/ServerItem.tscn")
 var server_ips = []
 
@@ -14,4 +15,9 @@ func on_found_server(ip: String, players_qtd: int):
 		var server = server_item.instance()
 		server.get_node("HBoxContainer/VBoxContainer/Ip").text = ip
 		server.get_node("HBoxContainer/VBoxContainer/PlayersQtd").text = "Players: %d/4" % players_qtd
+		server.connect("try_connect", self, "on_try_connect")
 		$VBoxContainer.add_child(server)
+
+func on_try_connect(ip: String):
+	get_tree().change_scene_to(lobby)
+	NetworkClient.set_server_ip(ip)

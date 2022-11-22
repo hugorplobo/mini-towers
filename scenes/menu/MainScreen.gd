@@ -7,6 +7,5 @@ func _on_ServerButton_button_up():
 	get_tree().change_scene_to(lobby)
 	NetworkServer.start_server()
 
-
 func _on_ConnectButton_button_up():
 	get_tree().change_scene_to(servers)

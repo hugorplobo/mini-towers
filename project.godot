@@ -36,6 +36,10 @@ GameState="*res://utils/GameState.gd"
 NetworkClient="*res://utils/NetworkClient.gd"
 NetworkServer="*res://utils/NetworkServer.gd"
 
+[display]
+
+window/stretch/aspect="keep"
+
 [gui]
 
 common/drop_mouse_on_gui_input_disabled=true
