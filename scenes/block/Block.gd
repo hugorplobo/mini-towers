@@ -1,15 +1,17 @@
+class_name Block
 extends RigidBody2D
 
-onready var sprite_node = $Sprite
-onready var tween_sprite = $SpriteTween
-onready var tween_collision = $CollisionTween
+onready var sprite_node: Sprite = $Sprite
+onready var tween_sprite: Tween = $SpriteTween
+onready var tween_collision: Tween = $CollisionTween
 
-export var type = 1
-var is_ragdoll = false
-var is_rotating = false
-var is_moving = false
-var target_angle = 0
+export var id := -1
+export var type := 1
+var is_ragdoll := false
+var is_rotating := false
+var is_moving := false
 var collision_node: CollisionPolygon2D
+var commands := []
 
 signal on_touch
 
@@ -25,22 +27,24 @@ func _integrate_forces(state):
 	
 	state.linear_velocity = Vector2(0, 100)
 	
-	if not is_moving:
-		if Input.is_action_pressed("left"):
-			move_block(state, 10)
-		elif Input.is_action_pressed("right"):
-			move_block(state, -10)
-	if Input.is_action_pressed("down"):
-		state.linear_velocity = Vector2(0, 200)
-	if not is_rotating:
-		if Input.is_action_just_pressed("rotate_right"):
-			rotate_block(90)
-		elif Input.is_action_just_pressed("rotate_left"):
-			rotate_block(-90)
-	if Input.is_action_just_pressed("impulse_right"):
-		impulse_block(30)
-	elif Input.is_action_just_pressed("impulse_left"):
-		impulse_block(-30)
+	for command in commands:
+		match command:
+			"left":
+				move_block(state, 30)
+			"right":
+				move_block(state, -30)
+			"down":
+				move_down(state)
+			"rotate_left":
+				rotate_block(-90)
+			"rotate_right":
+				rotate_block(90)
+			"impulse_left":
+				impulse_block(-30)
+			"impulse_right":
+				impulse_block(30)
+	
+	commands.clear()
 
 func _on_Block_body_entered(_body):
 	if not is_ragdoll:
@@ -52,10 +56,14 @@ func _on_Block_body_entered(_body):
 		emit_signal("on_touch")
 
 func move_block(state: Physics2DDirectBodyState, amount: int):
-	is_moving = true
-	state.transform = state.transform.translated(Vector2.LEFT * amount)
-	yield(get_tree().create_timer(0.1), "timeout")
-	is_moving = false
+	if not is_moving:
+		is_moving = true
+		state.transform = state.transform.translated(Vector2.LEFT * amount)
+		yield(get_tree().create_timer(0.1), "timeout")
+		is_moving = false
+
+func move_down(state: Physics2DDirectBodyState):
+	state.linear_velocity = Vector2(0, 200)
 
 func rotate_block(angle: int):
 	tween_sprite.interpolate_property(

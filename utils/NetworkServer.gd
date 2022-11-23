@@ -1,6 +1,7 @@
 extends Node
 
 export var is_server := false
+var is_in_discover_mode := false
 var main_socket: TCP_Server
 var discover_socket: PacketPeerUDP
 var mutex := Mutex.new()
@@ -14,10 +15,18 @@ var game_seed := -1
 
 signal connection(id, player)
 signal disconnection(player)
+signal left(id)
+signal right(id)
+signal down(id)
+signal rotate_left(id)
+signal rotate_right(id)
+signal impulse_left(id)
+signal impulse_right(id)
 
 func start_server():
 #	print("starting server...")
 	is_server = true
+	is_in_discover_mode = true
 	main_socket = TCP_Server.new()
 	discover_socket = PacketPeerUDP.new()
 	
@@ -27,7 +36,7 @@ func start_server():
 	discover_thread.start(self, "listen_udp")
 
 func listen_tcp():
-	while (true):
+	while true:
 		var connection = main_socket.take_connection()
 		if (connection):
 #			print("connection received...")
@@ -40,7 +49,7 @@ func listen_tcp():
 			thread.start(self, "handle_connection", connection)
 
 func listen_udp():
-	while (true):
+	while is_in_discover_mode:
 		if discover_socket.wait() == OK:
 			var data = discover_socket.get_var()
 			parser.parse(discover_socket.get_packet_ip(), discover_socket.get_packet_port(), data)
@@ -48,6 +57,11 @@ func listen_udp():
 func handle_connection(socket: StreamPeerTCP):
 	print("%s" % socket.get_connected_host())
 	socket.put_var(greetings())
+	
+	while true:
+		var data = socket.get_var()
+		if data:
+			parser.parse(socket.get_connected_host(), socket.get_connected_port(), data)
 
 func new_player(player: StreamPeerTCP):
 	for client in clients:
@@ -67,9 +81,14 @@ func response_discover(ip: String, port: int):
 	discover_socket.put_var("i'm a server\n%d" % (clients.size() + 1))
 
 func start_game():
+	is_in_discover_mode = false
 	var rng = RandomNumberGenerator.new()
 	rng.randomize()
 	game_seed = rng.randi()
 	
 	for client in clients:
 		client.put_var("start game\n%d" % game_seed)
+
+func send_message(message: String):
+	for client in clients:
+		client.put_var(message)

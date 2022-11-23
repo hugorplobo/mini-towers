@@ -1,5 +1,6 @@
 extends Control
 
+var game_server = preload("res://scenes/game_server/GameServer.tscn")
 var game = preload("res://scenes/game/Game.tscn")
 
 func _init():
@@ -43,7 +44,7 @@ func on_new_player(id):
 
 func _on_Button_button_up():
 	NetworkServer.start_game()
-	get_tree().change_scene_to(game)
+	get_tree().change_scene_to(game_server)
 
 func on_start_game():
 	get_tree().change_scene_to(game)

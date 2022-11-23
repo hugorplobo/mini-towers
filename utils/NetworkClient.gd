@@ -15,6 +15,8 @@ signal found_server(ip, players_qtd)
 signal greetings
 signal new_player(id)
 signal start_game
+signal state(id, new_state)
+signal create_block(field_id, block_id, block_type)
 
 func start_discover():
 	is_discovering = true
@@ -55,3 +57,6 @@ func connect_to_server():
 		return true
 	else:
 		return false
+
+func send_message(message: String):
+	main_socket.put_var(message)

@@ -9,6 +9,16 @@
 config_version=4
 
 _global_script_classes=[ {
+"base": "RigidBody2D",
+"class": "Block",
+"language": "GDScript",
+"path": "res://scenes/block/Block.gd"
+}, {
+"base": "KinematicBody2D",
+"class": "BlockKinematic",
+"language": "GDScript",
+"path": "res://scenes/block/BlockKinematic.gd"
+}, {
 "base": "Node",
 "class": "ProtocolParserClient",
 "language": "GDScript",
@@ -20,6 +30,8 @@ _global_script_classes=[ {
 "path": "res://utils/ProtocolParserServer.gd"
 } ]
 _global_script_class_icons={
+"Block": "",
+"BlockKinematic": "",
 "ProtocolParserClient": "",
 "ProtocolParserServer": ""
 }
