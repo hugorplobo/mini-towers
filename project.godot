@@ -50,6 +50,7 @@ NetworkServer="*res://utils/NetworkServer.gd"
 
 [display]
 
+window/stretch/mode="viewport"
 window/stretch/aspect="keep"
 
 [gui]
