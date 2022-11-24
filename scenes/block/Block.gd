@@ -5,24 +5,34 @@ onready var sprite_node: Sprite = $Sprite
 onready var tween_sprite: Tween = $SpriteTween
 onready var tween_collision: Tween = $CollisionTween
 
+var gray_shader = preload("res://assets/shaders/Block.gdshader")
+
 export var id := -1
 export var type := 1
 var is_ragdoll := false
 var is_rotating := false
 var is_moving := false
+var is_petrified := false
 var collision_node: CollisionPolygon2D
 var commands := []
 
 signal on_touch
+signal on_out_screen(id)
 
 func _ready():
 	collision_node = get_node("Shape%d" % type)
 	$Sprite.texture = load("res://assets/block%d.png" % type)
+	$Sprite.material = ShaderMaterial.new()
+	$Sprite.material.shader = gray_shader.duplicate()
 	collision_node.set_deferred("disabled", false)
 	collision_node.visible = true
 
 func _integrate_forces(state):
-	if is_ragdoll:
+	if position.y > get_viewport_rect().size.y:
+		emit_signal("on_out_screen", id)
+		queue_free()
+	
+	if is_ragdoll or is_petrified:
 		return
 	
 	state.linear_velocity = Vector2(0, 100)
@@ -45,6 +55,11 @@ func _integrate_forces(state):
 				impulse_block(30)
 	
 	commands.clear()
+
+func set_is_petrified(value: bool):
+	is_petrified = value
+	sprite_node.material.set_shader_param("enabled", is_petrified)
+	sleeping = true
 
 func _on_Block_body_entered(_body):
 	if not is_ragdoll:

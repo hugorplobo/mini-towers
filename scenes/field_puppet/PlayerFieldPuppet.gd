@@ -7,6 +7,8 @@ var current_block: BlockKinematic = null
 func _init():
 	NetworkClient.connect("state", self, "on_new_state")
 	NetworkClient.connect("create_block", self, "handle_new_block")
+	NetworkClient.connect("free_block", self, "on_free_block")
+	NetworkClient.connect("petrify_all", self, "on_petrify_all")
 
 func _process(delta):
 	if current_block == null or id != NetworkClient.id:
@@ -30,11 +32,11 @@ func _process(delta):
 	elif Input.is_action_just_pressed("impulse_right"):
 		NetworkClient.send_message("impulse right\n%d" % id)
 
-func handle_new_block(field_id, block_id, block_type):
+func handle_new_block(field_id, block_id, block_type, next_block_type):
 	if int(field_id) == id:
-		new_block(int(block_id), int(block_type))
+		new_block(int(block_id), int(block_type), int(next_block_type))
 
-func new_block(block_id: int, block_type: int):
+func new_block(block_id: int, block_type: int, next_type: int):
 	var block = block_scene.instance()
 	block.type = block_type
 	block.id = block_id
@@ -42,6 +44,10 @@ func new_block(block_id: int, block_type: int):
 	block.update()
 	add_child(block)
 	current_block = block
+	
+	var texture = load("res://assets/block%d.png" % next_type)
+	print("NETROU")
+	$NextBlock.texture = texture
 
 func on_new_state(field_id: String, new_state: Array):
 	if int(field_id) != id:
@@ -60,3 +66,19 @@ func on_new_state(field_id: String, new_state: Array):
 				block.position = Vector2(block_x, block_y)
 				block.set_rotation(block_sr)
 				block.rotation_degrees = block_r
+
+func on_free_block(field_id: String, block_id: String):
+	if int(field_id) != id:
+		return
+	
+	for block in get_children():
+		if block is BlockKinematic and block.id == int(block_id):
+			block.queue_free()
+
+func on_petrify_all(field_id: String):
+	if int(field_id) != id:
+		return
+	
+	for block in get_children():
+		if block is BlockKinematic:
+			block.set_is_petrified(true)

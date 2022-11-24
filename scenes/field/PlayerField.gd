@@ -3,6 +3,7 @@ extends Node2D
 var block_scene = preload("res://scenes/block/Block.tscn")
 var rng := RandomNumberGenerator.new()
 var next_block_int = 0
+var lifes := 2
 var current_block: Block = null
 onready var next_block: Sprite = $NextBlock
 export var id = -1
@@ -17,7 +18,7 @@ func _init():
 	NetworkServer.connect("impulse_right", self, "on_impulse_right")
 
 func _process(delta):
-	if id != 0:
+	if id != 0 or current_block == null:
 		return
 	
 	if Input.is_action_pressed("left"):
@@ -46,12 +47,14 @@ func _ready():
 
 func new_block():
 	var block = get_parent().create_block(next_block_int)
-	NetworkServer.send_message("create block\n%d\n%d\n%d" % [id, block.id, next_block_int])
+	var type = next_block_int
 	block.position = to_local(Vector2(position.x, 0))
 	block.connect("on_touch", self, "_on_block_touch")
+	block.connect("on_out_screen", self, "_on_block_out")
 	add_child(block)
 	current_block = block
 	set_next_block()
+	NetworkServer.send_message("create block\n%d\n%d\n%d\n%d" % [id, block.id, type, next_block_int])
 
 func set_next_block():
 	next_block_int = rng.randi_range(1, 7)
@@ -60,30 +63,51 @@ func set_next_block():
 func _on_block_touch():
 	new_block()
 
+func _on_block_out(block_id):
+	print("ENTROU ID %d" % id)
+	current_block = null
+	
+	if lifes < 1:
+		petrify_all()
+		NetworkServer.send_message("free block\n%d\n%d" % [id, block_id])
+		return
+	
+	lifes -= 1
+	print("vidas: %d" % lifes)
+	new_block()
+	NetworkServer.send_message("free block\n%d\n%d" % [id, block_id])
+
+func petrify_all():
+	print("petrificando")
+	NetworkServer.send_message("petrify all\n%d" % id)
+	for block in get_children():
+		if block is Block:
+			block.set_is_petrified(true)
+
 func on_move_right(player_id: String):
-	if int(player_id) == id:
+	if int(player_id) == id and current_block != null:
 		current_block.commands.append("right")
 
 func on_move_left(player_id: String):
-	if int(player_id) == id:
+	if int(player_id) == id and current_block != null:
 		current_block.commands.append("left")
 
 func on_move_down(player_id: String):
-	if int(player_id) == id:
+	if int(player_id) == id and current_block != null:
 		current_block.commands.append("down")
 
 func on_rotate_right(player_id: String):
-	if int(player_id) == id:
+	if int(player_id) == id and current_block != null:
 		current_block.commands.append("rotate_right")
 
 func on_rotate_left(player_id: String):
-	if int(player_id) == id:
+	if int(player_id) == id and current_block != null:
 		current_block.commands.append("rotate_left")
 
 func on_impulse_left(player_id: String):
-	if int(player_id) == id:
+	if int(player_id) == id and current_block != null:
 		current_block.commands.append("impulse_left")
 
 func on_impulse_right(player_id: String):
-	if int(player_id) == id:
+	if int(player_id) == id and current_block != null:
 		current_block.commands.append("impulse_right")

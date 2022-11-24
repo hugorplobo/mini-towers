@@ -16,7 +16,9 @@ signal greetings
 signal new_player(id)
 signal start_game
 signal state(id, new_state)
-signal create_block(field_id, block_id, block_type)
+signal create_block(field_id, block_id, block_type, next_block_type)
+signal free_block(field_id, block_id)
+signal petrify_all(field_id)
 
 func start_discover():
 	is_discovering = true

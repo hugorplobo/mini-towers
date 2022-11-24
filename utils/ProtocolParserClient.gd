@@ -27,4 +27,8 @@ func parse(ip: String, port: int, data: String):
 			lines.remove(0)
 			NetworkClient.emit_signal("state", id, lines)
 		"create block":
-			NetworkClient.emit_signal("create_block", lines[0], lines[1], lines[2])
+			NetworkClient.emit_signal("create_block", lines[0], lines[1], lines[2], lines[3])
+		"free block":
+			NetworkClient.emit_signal("free_block", lines[0], lines[1])
+		"petrify all":
+			NetworkClient.emit_signal("petrify_all", lines[0])
