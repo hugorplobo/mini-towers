@@ -30,7 +30,6 @@ func _ready():
 func _integrate_forces(state):
 	if position.y > get_viewport_rect().size.y:
 		emit_signal("on_out_screen", id)
-		queue_free()
 	
 	if is_ragdoll or is_petrified:
 		return
@@ -40,9 +39,9 @@ func _integrate_forces(state):
 	for command in commands:
 		match command:
 			"left":
-				move_block(state, 30)
+				move_block(state, 20)
 			"right":
-				move_block(state, -30)
+				move_block(state, -20)
 			"down":
 				move_down(state)
 			"rotate_left":
@@ -50,9 +49,9 @@ func _integrate_forces(state):
 			"rotate_right":
 				rotate_block(90)
 			"impulse_left":
-				impulse_block(-30)
+				impulse_block(-40)
 			"impulse_right":
-				impulse_block(30)
+				impulse_block(40)
 	
 	commands.clear()
 
@@ -61,7 +60,9 @@ func set_is_petrified(value: bool):
 	sprite_node.material.set_shader_param("enabled", is_petrified)
 	sleeping = true
 
-func _on_Block_body_entered(_body):
+func _on_Block_body_entered(body):
+	if body is get_script() and not body.is_ragdoll:
+		return
 	if not is_ragdoll:
 		is_ragdoll = true
 		set_deferred("gravity_scale", 1)

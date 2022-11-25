@@ -1,3 +1,4 @@
+class_name PlayerField
 extends Node2D
 
 var block_scene = preload("res://scenes/block/Block.tscn")
@@ -5,7 +6,7 @@ var rng := RandomNumberGenerator.new()
 var next_block_int = 0
 var lifes := 2
 var current_block: Block = null
-onready var next_block: Sprite = $NextBlock
+onready var next_block: Sprite = $CanvasLayer/NextBlock
 export var id = -1
 
 func _init():
@@ -64,18 +65,23 @@ func _on_block_touch():
 	new_block()
 
 func _on_block_out(block_id):
-	print("ENTROU ID %d" % id)
-	current_block = null
+	var block
+	for child in get_children():
+		if child is Block and child.id == block_id:
+			block = child
 	
 	if lifes < 1:
 		petrify_all()
 		NetworkServer.send_message("free block\n%d\n%d" % [id, block_id])
 		return
-	
+
 	lifes -= 1
-	print("vidas: %d" % lifes)
-	new_block()
 	NetworkServer.send_message("free block\n%d\n%d" % [id, block_id])
+	
+	if not block.is_ragdoll:
+		new_block()
+	
+	block.queue_free()
 
 func petrify_all():
 	print("petrificando")

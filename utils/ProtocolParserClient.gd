@@ -32,3 +32,5 @@ func parse(ip: String, port: int, data: String):
 			NetworkClient.emit_signal("free_block", lines[0], lines[1])
 		"petrify all":
 			NetworkClient.emit_signal("petrify_all", lines[0])
+		"resize":
+			NetworkClient.emit_signal("resize")

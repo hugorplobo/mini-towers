@@ -2,6 +2,9 @@ extends Node2D
 
 var field = preload("res://scenes/field_puppet/PlayerFieldPuppet.tscn")
 
+func _init():
+	NetworkClient.connect("resize", self, "on_camera_resize")
+
 func _ready():
 	var init_x = 100
 	var init_y = 600
@@ -14,3 +17,9 @@ func _ready():
 		client_field.position = Vector2(init_x, init_y)
 		init_x += 300
 		add_child(client_field)
+
+func on_camera_resize():
+	$Goal.position.y -= 300
+	$Tween.interpolate_property($Camera2D, "zoom", $Camera2D.zoom, $Camera2D.zoom + Vector2(0.5, 0.5), 0.5, Tween.TRANS_CUBIC)
+	$Tween.interpolate_property($Camera2D, "offset:y", $Camera2D.offset.y, $Camera2D.offset.y - 150, 0.5, Tween.TRANS_CUBIC)
+	$Tween.start()

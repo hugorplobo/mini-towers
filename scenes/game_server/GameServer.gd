@@ -11,7 +11,8 @@ func _ready():
 	clients.push_front(0)
 	
 	for client in clients:
-		var client_field = field.instance()
+		var client_field: PlayerField = field.instance()
+		client_field.get_node("CanvasLayer").offset.x = init_x - 100
 		client_field.id = int(client)
 		client_field.position = Vector2(init_x, init_y)
 		init_x += 300
@@ -19,7 +20,8 @@ func _ready():
 
 func _process(delta):
 	for field in get_children():
-		NetworkServer.send_message(build_message(field))
+		if field is PlayerField:
+			NetworkServer.send_message(build_message(field))
 
 func build_message(parent: Node2D):
 	var message = "state\n%d" % parent.id
@@ -42,3 +44,11 @@ func create_block(next_type: int):
 	block.id = next_id
 	next_id += 1
 	return block
+
+func _on_Goal_body_entered(body):
+	if body is Block and body.is_ragdoll:
+		NetworkServer.send_message("resize")
+		$Goal.position.y -= 300
+		$Tween.interpolate_property($Camera2D, "zoom", $Camera2D.zoom, $Camera2D.zoom + Vector2(0.5, 0.5), 0.5, Tween.TRANS_CUBIC)
+		$Tween.interpolate_property($Camera2D, "offset:y", $Camera2D.offset.y, $Camera2D.offset.y - 150, 0.5, Tween.TRANS_CUBIC)
+		$Tween.start()
