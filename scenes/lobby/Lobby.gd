@@ -39,6 +39,7 @@ func on_greetings():
 
 func on_new_player(id):
 	var label = Label.new()
+	label.align = Label.ALIGN_CENTER
 	label.text = "Player #%s" % id
 	$VBoxContainer.add_child(label)
 

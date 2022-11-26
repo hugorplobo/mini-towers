@@ -39,9 +39,9 @@ func _integrate_forces(state):
 	for command in commands:
 		match command:
 			"left":
-				move_block(state, 20)
+				move_block(state, 10)
 			"right":
-				move_block(state, -20)
+				move_block(state, -10)
 			"down":
 				move_down(state)
 			"rotate_left":
@@ -58,7 +58,7 @@ func _integrate_forces(state):
 func set_is_petrified(value: bool):
 	is_petrified = value
 	sprite_node.material.set_shader_param("enabled", is_petrified)
-	sleeping = true
+	set_deferred("mode", RigidBody2D.MODE_STATIC)
 
 func _on_Block_body_entered(body):
 	if body is get_script() and not body.is_ragdoll:
@@ -82,17 +82,18 @@ func move_down(state: Physics2DDirectBodyState):
 	state.linear_velocity = Vector2(0, 200)
 
 func rotate_block(angle: int):
-	tween_sprite.interpolate_property(
-		sprite_node, "rotation_degrees", sprite_node.rotation_degrees, sprite_node.rotation_degrees + angle, 0.25, Tween.TRANS_ELASTIC
-	)
-	
-	tween_collision.interpolate_property(
-		collision_node, "rotation_degrees", collision_node.rotation_degrees, collision_node.rotation_degrees + angle, 0.25, Tween.TRANS_ELASTIC
-	)
-	
-	is_rotating = true
-	tween_collision.start()
-	tween_sprite.start()
+	if not is_rotating:
+		tween_sprite.interpolate_property(
+			sprite_node, "rotation_degrees", sprite_node.rotation_degrees, sprite_node.rotation_degrees + angle, 0.25, Tween.TRANS_ELASTIC
+		)
+		
+		tween_collision.interpolate_property(
+			collision_node, "rotation_degrees", collision_node.rotation_degrees, collision_node.rotation_degrees + angle, 0.25, Tween.TRANS_ELASTIC
+		)
+		
+		is_rotating = true
+		tween_collision.start()
+		tween_sprite.start()
 
 func impulse_block(amount: int):
 	add_central_force(Vector2.RIGHT * amount * 1000)

@@ -48,6 +48,11 @@ func create_block(next_type: int):
 func _on_Goal_body_entered(body):
 	if body is Block and body.is_ragdoll:
 		NetworkServer.send_message("resize")
+		
+		for field in get_children():
+			if field is PlayerField:
+				field.init_block_height -= 300
+		
 		$Goal.position.y -= 300
 		$Tween.interpolate_property($Camera2D, "zoom", $Camera2D.zoom, $Camera2D.zoom + Vector2(0.5, 0.5), 0.5, Tween.TRANS_CUBIC)
 		$Tween.interpolate_property($Camera2D, "offset:y", $Camera2D.offset.y, $Camera2D.offset.y - 150, 0.5, Tween.TRANS_CUBIC)

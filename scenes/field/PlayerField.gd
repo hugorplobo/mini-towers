@@ -6,6 +6,7 @@ var rng := RandomNumberGenerator.new()
 var next_block_int = 0
 var lifes := 2
 var current_block: Block = null
+var init_block_height: int = 0
 onready var next_block: Sprite = $CanvasLayer/NextBlock
 export var id = -1
 
@@ -49,7 +50,7 @@ func _ready():
 func new_block():
 	var block = get_parent().create_block(next_block_int)
 	var type = next_block_int
-	block.position = to_local(Vector2(position.x, 0))
+	block.position = to_local(Vector2(position.x, init_block_height))
 	block.connect("on_touch", self, "_on_block_touch")
 	block.connect("on_out_screen", self, "_on_block_out")
 	add_child(block)

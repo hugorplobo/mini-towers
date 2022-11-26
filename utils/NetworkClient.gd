@@ -63,3 +63,9 @@ func connect_to_server():
 
 func send_message(message: String):
 	main_socket.put_var(message)
+
+func _notification(what):
+	if what == MainLoop.NOTIFICATION_WM_QUIT_REQUEST:
+		print("fechando")
+		main_socket.disconnect_from_host()
+		get_tree().quit()

@@ -15,7 +15,7 @@ void fragment() {
 shader = SubResource( 2 )
 
 [sub_resource type="RectangleShape2D" id=1]
-extents = Vector2( 96, 32 )
+extents = Vector2( 96, 639 )
 
 [sub_resource type="DynamicFont" id=4]
 size = 32
@@ -28,10 +28,12 @@ script = ExtResource( 1 )
 
 [node name="Sprite" type="Sprite" parent="Floor"]
 material = SubResource( 3 )
-scale = Vector2( 3, 1 )
+position = Vector2( 0, 608 )
+scale = Vector2( 3, 20 )
 texture = ExtResource( 2 )
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Floor"]
+position = Vector2( 0, 607 )
 shape = SubResource( 1 )
 
 [node name="CanvasLayer" type="CanvasLayer" parent="."]

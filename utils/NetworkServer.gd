@@ -24,7 +24,6 @@ signal impulse_left(id)
 signal impulse_right(id)
 
 func start_server():
-#	print("starting server...")
 	is_server = true
 	is_in_discover_mode = true
 	main_socket = TCP_Server.new()
@@ -39,14 +38,13 @@ func listen_tcp():
 	while true:
 		var connection = main_socket.take_connection()
 		if (connection):
-#			print("connection received...")
 			emit_signal("connection", next_client_id, connection.get_connected_host())
 			new_player(connection)
 			clients.append(connection)
 			ids.append(next_client_id)
 			
 			var thread = Thread.new()
-			thread.start(self, "handle_connection", connection)
+			thread.start(self, "handle_connection", connection, next_client_id)
 
 func listen_udp():
 	while is_in_discover_mode:
@@ -54,12 +52,20 @@ func listen_udp():
 			var data = discover_socket.get_var()
 			parser.parse(discover_socket.get_packet_ip(), discover_socket.get_packet_port(), data)
 
-func handle_connection(socket: StreamPeerTCP):
-	print("%s" % socket.get_connected_host())
+func handle_connection(socket: StreamPeerTCP, id: int):
 	socket.put_var(greetings())
 	
 	while true:
+		if not socket.is_connected_to_host():
+			print("disconnected %d" % id)
+			ids.remove(ids.find(id))
+			clients.remove(clients.find(socket))
+			emit_signal("disconnection", id)
+			break
+		
 		var data = socket.get_var()
+		print(data)
+		
 		if data:
 			parser.parse(socket.get_connected_host(), socket.get_connected_port(), data)
 

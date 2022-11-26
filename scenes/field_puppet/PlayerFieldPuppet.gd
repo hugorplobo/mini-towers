@@ -1,8 +1,10 @@
+class_name PlayerFieldPuppet
 extends Node2D
 
 export var id = -1
 var block_scene = preload("res://scenes/block/BlockKinematic.tscn")
 var current_block: BlockKinematic = null
+var init_block_height: int = 0
 
 func _init():
 	NetworkClient.connect("state", self, "on_new_state")
@@ -40,14 +42,14 @@ func new_block(block_id: int, block_type: int, next_type: int):
 	var block = block_scene.instance()
 	block.type = block_type
 	block.id = block_id
-	block.position = to_local(Vector2(position.x, 0))
+	block.position = to_local(Vector2(position.x, init_block_height))
 	block.update()
 	add_child(block)
 	current_block = block
 	
 	var texture = load("res://assets/block%d.png" % next_type)
 	print("NETROU")
-	$NextBlock.texture = texture
+	$CanvasLayer/NextBlock.texture = texture
 
 func on_new_state(field_id: String, new_state: Array):
 	if int(field_id) != id:
