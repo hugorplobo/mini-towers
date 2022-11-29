@@ -19,5 +19,5 @@ func on_found_server(ip: String, players_qtd: int):
 		$VBoxContainer.add_child(server)
 
 func on_try_connect(ip: String):
-	get_tree().change_scene_to(lobby)
-	NetworkClient.set_server_ip(ip)
+	if NetworkClient.connect_to_server(ip):
+		get_tree().change_scene_to(lobby)

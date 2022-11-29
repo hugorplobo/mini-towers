@@ -25,4 +25,5 @@ func parse(ip: String, port: int, data: String):
 			NetworkServer.emit_signal("impulse_left", lines[0])
 		"impulse right":
 			NetworkServer.emit_signal("impulse_right", lines[0])
-		
+		"disconnect":
+			NetworkServer.on_disconnection(int(lines[0]), ip, port)

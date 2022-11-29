@@ -4,7 +4,6 @@ export var is_server := false
 var is_in_discover_mode := false
 var main_socket: TCP_Server
 var discover_socket: PacketPeerUDP
-var mutex := Mutex.new()
 var server_thread := Thread.new()
 var discover_thread := Thread.new()
 var parser := ProtocolParserServer.new()
@@ -38,13 +37,14 @@ func listen_tcp():
 	while true:
 		var connection = main_socket.take_connection()
 		if (connection):
+			print("new connection")
 			emit_signal("connection", next_client_id, connection.get_connected_host())
 			new_player(connection)
 			clients.append(connection)
 			ids.append(next_client_id)
 			
 			var thread = Thread.new()
-			thread.start(self, "handle_connection", connection, next_client_id)
+			thread.start(self, "handle_connection", [connection, next_client_id])
 
 func listen_udp():
 	while is_in_discover_mode:
@@ -52,22 +52,32 @@ func listen_udp():
 			var data = discover_socket.get_var()
 			parser.parse(discover_socket.get_packet_ip(), discover_socket.get_packet_port(), data)
 
-func handle_connection(socket: StreamPeerTCP, id: int):
+func handle_connection(init_data):
+	print("sending greeting")
+	var socket: StreamPeerTCP = init_data[0]
+	var id: int = init_data[1]
+	
 	socket.put_var(greetings())
 	
 	while true:
-		if not socket.is_connected_to_host():
-			print("disconnected %d" % id)
-			ids.remove(ids.find(id))
-			clients.remove(clients.find(socket))
-			emit_signal("disconnection", id)
-			break
-		
 		var data = socket.get_var()
-		print(data)
 		
 		if data:
 			parser.parse(socket.get_connected_host(), socket.get_connected_port(), data)
+
+func on_disconnection(id: int, ip: String, port: int):
+	ids.remove(ids.find(id))
+	var socket
+	
+	for client in clients:
+		var client_socket: StreamPeerTCP = client
+		if client_socket.get_connected_host() == ip and client_socket.get_connected_port() == port:
+			socket = client_socket
+			break
+	
+	clients.remove(clients.find(socket))
+	send_message("disconnection\n%d" % id)
+	emit_signal("disconnection", id)
 
 func new_player(player: StreamPeerTCP):
 	for client in clients:

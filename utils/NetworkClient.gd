@@ -20,6 +20,7 @@ signal create_block(field_id, block_id, block_type, next_block_type)
 signal free_block(field_id, block_id)
 signal petrify_all(field_id)
 signal resize
+signal disconnection(id)
 
 func start_discover():
 	is_discovering = true
@@ -49,17 +50,20 @@ func discover():
 func add_client(client):
 	clients.append(client)
 
-func set_server_ip(ip: String):
-	server_ip = ip
-
-func connect_to_server():
+func connect_to_server(ip: String):
 	print("connecting")
-	if main_socket.connect_to_host(server_ip, 9002) == OK:
+	if main_socket.connect_to_host(ip, 9002) == OK:
+		print("connected")
+		server_ip = ip
 		is_discovering = false
 		tcp_thread.start(self, "run_tcp_thread")
 		return true
 	else:
 		return false
+
+func on_disconnection(id):
+	clients.remove(id)
+	emit_signal("disconnection", int(id))
 
 func send_message(message: String):
 	main_socket.put_var(message)
@@ -67,5 +71,6 @@ func send_message(message: String):
 func _notification(what):
 	if what == MainLoop.NOTIFICATION_WM_QUIT_REQUEST:
 		print("fechando")
+		main_socket.put_var("disconnect\n%d" % id)
 		main_socket.disconnect_from_host()
 		get_tree().quit()

@@ -34,3 +34,5 @@ func parse(ip: String, port: int, data: String):
 			NetworkClient.emit_signal("petrify_all", lines[0])
 		"resize":
 			NetworkClient.emit_signal("resize")
+		"disconnection":
+			NetworkClient.on_disconnection(lines[0])

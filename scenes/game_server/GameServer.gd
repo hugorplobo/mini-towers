@@ -12,15 +12,30 @@ func _ready():
 	
 	for client in clients:
 		var client_field: PlayerField = field.instance()
-		client_field.get_node("CanvasLayer").offset.x = init_x - 100
 		client_field.id = int(client)
 		client_field.position = Vector2(init_x, init_y)
 		init_x += 300
 		add_child(client_field)
 
 func _process(delta):
+	var last_pos := Vector2.ZERO
+	
 	for field in get_children():
 		if field is PlayerField:
+			var canvas: CanvasLayer = field.get_node("CanvasLayer")
+			var label: Label = canvas.get_node("Label")
+			var next_block: Sprite = canvas.get_node("NextBlock")
+			var zoom = 0 if $Camera2D.zoom.x == 1 else $Camera2D.zoom.x
+			
+			if last_pos != Vector2.ZERO:
+				label.rect_position = Vector2(last_pos.x + 250 - zoom * 20, last_pos.y)
+				next_block.position = Vector2(label.rect_position.x + 40, label.rect_position.y + 60)
+			else:
+				label.rect_position = Vector2(field.position.x - 80 + 80 * zoom, 10)
+				next_block.position = Vector2(label.rect_position.x + 40, label.rect_position.y + 60)
+			
+			last_pos = label.rect_position
+			
 			NetworkServer.send_message(build_message(field))
 
 func build_message(parent: Node2D):
