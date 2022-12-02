@@ -78,8 +78,9 @@ func _on_block_out(block_id):
 		if child is Block and child.id == block_id:
 			block = child
 	
-	if lifes < 1:
+	if lifes <= 1:
 		petrify_all()
+		NetworkServer.send_message("petrify all\n%d" % id)
 		NetworkServer.send_message("free block\n%d\n%d" % [id, block_id])
 		return
 
@@ -93,7 +94,8 @@ func _on_block_out(block_id):
 
 func petrify_all():
 	print("petrificando")
-	NetworkServer.send_message("petrify all\n%d" % id)
+	lifes = 0
+
 	for block in get_children():
 		if block is Block:
 			block.set_is_petrified(true)
@@ -129,6 +131,7 @@ func on_impulse_right(player_id: String):
 func on_end_game(winner_id: int):
 	if id != winner_id:
 		petrify_all()
+		NetworkServer.send_message("petrify all\n%d" % id)
 	else:
 		for block in get_children():
 			if block is Block:

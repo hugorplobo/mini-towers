@@ -47,7 +47,9 @@ func run_tcp_thread():
 	while is_in_game:
 		var data = main_socket.get_var()
 		if data:
-			parser.parse(main_socket.get_connected_host(), main_socket.get_connected_port(), data)
+			var type = parser.parse(main_socket.get_connected_host(), main_socket.get_connected_port(), data)
+			if type == "end game":
+				return
 
 func discover():
 	print("discovering servers...")
@@ -76,6 +78,7 @@ func on_disconnection(id):
 	emit_signal("disconnection", int(id))
 
 func send_message(message: String):
+	print("entrou")
 	main_socket.put_var(message)
 
 func _notification(what):

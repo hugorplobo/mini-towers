@@ -5,12 +5,14 @@ func parse(ip: String, port: int, data: String):
 	var lines = data.split("\n")
 	var type = lines[0]
 	
-	print(type)
+	print(data)
 	lines.remove(0)
 	
 	match type:
 		"who is a server?":
 			NetworkServer.response_discover(ip, port)
+		"get greetings":
+			NetworkServer.send_message(NetworkServer.greetings())
 		"left":
 			NetworkServer.emit_signal("left", lines[0])
 		"right":

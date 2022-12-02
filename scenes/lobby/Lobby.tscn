@@ -32,6 +32,13 @@ margin_right = 223.0
 margin_bottom = 175.0
 alignment = 1
 
+[node name="Server" type="Label" parent="VBoxContainer"]
+margin_top = 165.0
+margin_right = 448.0
+margin_bottom = 179.0
+text = "Player #0 (Server)"
+align = 1
+
 [node name="Button" type="Button" parent="."]
 anchor_left = 0.5
 anchor_top = 0.5

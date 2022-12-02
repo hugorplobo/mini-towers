@@ -84,6 +84,7 @@ func process_end_game():
 		NetworkServer.send_message("end game\n%d" % not_petrified.id)
 		emit_signal("end_game", not_petrified.id)
 		$CanvasLayer/WinnerPanel.visible = true
+		$CanvasLayer/WinnerPanel/VBoxContainer/Winner.text = "O Player #%d venceu!" % not_petrified.id
 
 func _on_Goal_body_entered(body):
 	if body is Block and body.is_ragdoll:
@@ -101,6 +102,7 @@ func _on_Goal_body_entered(body):
 func on_disconnection(player_id: int):
 	for child in get_children():
 		if child is PlayerField and child.id == player_id:
+			print("ENTROU %d" % player_id)
 			child.petrify_all()
 
 func _on_Button_button_up():

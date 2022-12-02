@@ -86,6 +86,8 @@ func on_petrify_all(field_id: String):
 	if int(field_id) != id:
 		return
 	
+	lifes = 0
+	
 	for block in get_children():
 		if block is BlockKinematic:
-			block.set_is_petrified(true, true)
+			block.set_is_petrified(true)

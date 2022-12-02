@@ -52,6 +52,7 @@ func on_camera_resize():
 
 func on_end_game(player_id):
 	$CanvasLayer/WinnerPanel.visible = true
+	$CanvasLayer/WinnerPanel/VBoxContainer/Winner.text = "O Player #%d venceu!" % int(player_id)
 
 func _on_Button_button_up():
 	NetworkClient.disconnect_from_server()

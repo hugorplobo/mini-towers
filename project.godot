@@ -56,13 +56,16 @@ config/icon="res://icon.png"
 
 [autoload]
 
-GameState="*res://utils/GameState.gd"
 NetworkClient="*res://utils/NetworkClient.gd"
 NetworkServer="*res://utils/NetworkServer.gd"
 
 [display]
 
 window/size/resizable=false
+
+[global]
+
+fps=false
 
 [gui]
 

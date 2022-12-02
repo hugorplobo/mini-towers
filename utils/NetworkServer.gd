@@ -70,11 +70,8 @@ func listen_udp():
 			parser.parse(discover_socket.get_packet_ip(), discover_socket.get_packet_port(), data)
 
 func handle_connection(init_data):
-	print("sending greeting")
+	print("iniciando thread de conexão")
 	var socket: StreamPeerTCP = init_data[0]
-	var id: int = init_data[1]
-	
-	socket.put_var(greetings())
 	
 	while is_in_game or is_in_lobby:
 		var data = socket.get_var()

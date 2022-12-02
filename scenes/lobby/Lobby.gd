@@ -14,6 +14,9 @@ func _init():
 func _ready():
 	if not NetworkServer.is_server:
 		$Button.visible = false
+	
+	yield(get_tree().create_timer(0.5), "timeout")
+	NetworkClient.send_message("get greetings")
 
 func on_connection(id: int, ip: String):
 	var player_label = Label.new()
@@ -35,6 +38,12 @@ func on_disconnection(id: int):
 		$Button.disabled = true
 
 func on_greetings():
+	print("greetings received")
+	
+	for label in $VBoxContainer.get_children():
+		if label.name != "Server":
+			label.queue_free()
+	
 	for id in NetworkClient.clients:
 		var label = Label.new()
 		label.align = Label.ALIGN_CENTER
@@ -52,4 +61,5 @@ func _on_Button_button_up():
 	get_tree().change_scene_to(game_server)
 
 func on_start_game():
+	print("start game received")
 	get_tree().change_scene_to(game)
