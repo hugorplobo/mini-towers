@@ -6,7 +6,7 @@ Você pode baixar uma versão compilada para Linux nas releases desse repositór
 
 1. Clone o repositório
  ```
- $ git clone https://github.com/hugorplobo/open-towers.git
+ $ git clone https://github.com/hugorplobo/mini-towers
  ```
  2. Faça a instalação da [Godot Engine](https://godotengine.org) para o seu sistema operacional
  3. Entre na diretório do repositório clonado e execute
