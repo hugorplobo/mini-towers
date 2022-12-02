@@ -7,6 +7,7 @@ var tcp_thread := Thread.new()
 var parser := ProtocolParserClient.new()
 var server_ip
 var is_discovering := false
+var is_in_game := true
 var clients := []
 var id := -1
 var game_seed := -1
@@ -21,10 +22,18 @@ signal free_block(field_id, block_id)
 signal petrify_all(field_id)
 signal resize
 signal disconnection(id)
+signal end_game(id)
 
 func start_discover():
 	is_discovering = true
 	udp_thread.start(self, "run_udp_thread")
+
+func disconnect_from_server():
+	is_in_game = false
+	clients = []
+	udp_thread = Thread.new()
+	tcp_thread = Thread.new()
+	main_socket.disconnect_from_host()
 
 func run_udp_thread():
 	while is_discovering:
@@ -35,7 +44,7 @@ func run_udp_thread():
 		yield(get_tree().create_timer(1), "timeout")
 
 func run_tcp_thread():
-	while true:
+	while is_in_game:
 		var data = main_socket.get_var()
 		if data:
 			parser.parse(main_socket.get_connected_host(), main_socket.get_connected_port(), data)
@@ -56,6 +65,7 @@ func connect_to_server(ip: String):
 		print("connected")
 		server_ip = ip
 		is_discovering = false
+		is_in_game = true
 		tcp_thread.start(self, "run_tcp_thread")
 		return true
 	else:

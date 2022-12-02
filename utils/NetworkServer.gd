@@ -2,6 +2,8 @@ extends Node
 
 export var is_server := false
 var is_in_discover_mode := false
+var is_in_lobby := false
+var is_in_game := false
 var main_socket: TCP_Server
 var discover_socket: PacketPeerUDP
 var server_thread := Thread.new()
@@ -25,6 +27,7 @@ signal impulse_right(id)
 func start_server():
 	is_server = true
 	is_in_discover_mode = true
+	is_in_lobby = true
 	main_socket = TCP_Server.new()
 	discover_socket = PacketPeerUDP.new()
 	
@@ -33,8 +36,22 @@ func start_server():
 	server_thread.start(self, "listen_tcp")
 	discover_thread.start(self, "listen_udp")
 
+func stop_server():
+	is_server = false
+	server_thread = Thread.new()
+	discover_thread = Thread.new()
+	main_socket.stop()
+	discover_socket.close()
+	clients = []
+	ids = []
+	next_client_id = 1
+	is_in_game = false
+
 func listen_tcp():
-	while true:
+	while is_in_lobby:
+		if not main_socket.is_connection_available():
+			continue
+		
 		var connection = main_socket.take_connection()
 		if (connection):
 			print("new connection")
@@ -59,7 +76,7 @@ func handle_connection(init_data):
 	
 	socket.put_var(greetings())
 	
-	while true:
+	while is_in_game or is_in_lobby:
 		var data = socket.get_var()
 		
 		if data:
@@ -98,6 +115,8 @@ func response_discover(ip: String, port: int):
 
 func start_game():
 	is_in_discover_mode = false
+	is_in_lobby = false
+	is_in_game = true
 	var rng = RandomNumberGenerator.new()
 	rng.randomize()
 	game_seed = rng.randi()

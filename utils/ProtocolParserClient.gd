@@ -36,3 +36,5 @@ func parse(ip: String, port: int, data: String):
 			NetworkClient.emit_signal("resize")
 		"disconnection":
 			NetworkClient.on_disconnection(lines[0])
+		"end game":
+			NetworkClient.emit_signal("end_game", lines[0])

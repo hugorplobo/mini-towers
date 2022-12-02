@@ -5,6 +5,7 @@ export var id = -1
 var block_scene = preload("res://scenes/block/BlockKinematic.tscn")
 var current_block: BlockKinematic = null
 var init_block_height: int = 0
+var lifes := 3
 
 func _init():
 	NetworkClient.connect("state", self, "on_new_state")
@@ -13,6 +14,8 @@ func _init():
 	NetworkClient.connect("petrify_all", self, "on_petrify_all")
 
 func _process(delta):
+	$CanvasLayer/Vidas.text = "Vidas: %d" % lifes
+	
 	if current_block == null or id != NetworkClient.id:
 		return
 	
@@ -48,7 +51,6 @@ func new_block(block_id: int, block_type: int, next_type: int):
 	current_block = block
 	
 	var texture = load("res://assets/block%d.png" % next_type)
-	print("NETROU")
 	$CanvasLayer/NextBlock.texture = texture
 
 func on_new_state(field_id: String, new_state: Array):
@@ -73,6 +75,9 @@ func on_free_block(field_id: String, block_id: String):
 	if int(field_id) != id:
 		return
 	
+	if lifes >= 1:
+		lifes -= 1
+	
 	for block in get_children():
 		if block is BlockKinematic and block.id == int(block_id):
 			block.queue_free()
@@ -83,4 +88,4 @@ func on_petrify_all(field_id: String):
 	
 	for block in get_children():
 		if block is BlockKinematic:
-			block.set_is_petrified(true)
+			block.set_is_petrified(true, true)

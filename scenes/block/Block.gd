@@ -57,6 +57,7 @@ func _integrate_forces(state):
 
 func set_is_petrified(value: bool):
 	is_petrified = value
+	is_ragdoll = value
 	sprite_node.material.set_shader_param("enabled", is_petrified)
 	set_deferred("mode", RigidBody2D.MODE_STATIC)
 
